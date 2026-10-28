@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f8f5eb" />
+    <title>Heirloom Studio — Handcrafted by Valeria</title>
+    <meta
+      name="description"
+      content="A little tomato, a lot of personality. Explore handmade-inspired tomato charms or build your own with colorful beads and your favorite clasp."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./js/app.js"></script>
+    <script type="module" src="./js/reveal.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="announcement">
+      <span data-brand="announcement">☆ Grand opening November 2026! ☆</span>
+      <!--
+      <span class="preview-badge" id="mode-label"
+        >STOREFRONT PREVIEW · PRICES ARE PLACEHOLDERS</span
+      >
+      -->
+    </div>
+    <header class="site-header">
+      <a
+        class="wordmark"
+        href="#"
+        aria-label="Heirloom Studio home"
+        data-brand-home
+        ><span class="logo-tomato" aria-hidden="true"
+          ><img src="assets/tomato-faceless.png" class="tomato-icon" /></span
+        ><span data-brand-lead="name"
+          >Heirloom Studio<span class="wordmark-sub" data-brand="sub"
+            >Handcrafted by Valeria</span
+          ></span
+        ></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#shop">Shop the patch</a>
+        <a href="#build">Harvest your own</a>
+        <a href="#artist">Our little story</a>
+      </nav>
+      <button
+        class="bag-button"
+        id="open-bag"
+        aria-haspopup="dialog"
+        aria-controls="bag"
+      >
+        <svg
+          width="20"
+          height="22"
+          viewBox="0 0 24 25"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M4 8h16l1 15H3L4 8Z" />
+          <path d="M8 9V6a4 4 0 018 0v3" /></svg
+        ><span>Bag</span><span class="bag-count" id="bag-count">0</span>
+      </button>
+    </header>
+    <main id="main">
+      <section class="hero section-wrap" aria-labelledby="hero-heading">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="small-line"></span> A FRESH, SILLY, LITTLE TOMATO
+          </p>
+          <h1 id="hero-heading">
+            Tiny charms,<br />big <span class="script-word">personality.</span>
+          </h1>
+          <p class="hero-description">
+            A tomato with a mood, your favorite beads, and a little something
+            that’s very, very you.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="studio.html"
+              >Harvest your own <span>↗</span></a
+            ><a class="text-link" href="#shop"
+              >Meet the ready mades <span>→</span></a
+            >
+          </div>
+        </div>
+        <div
+          class="hero-scene"
+          aria-label="Illustrated tomato charm collection"
+        >
+          <div class="scene-grid"></div>
+          <div class="scene-caption">
+            fresh from<br /><span>the charm patch</span>
+          </div>
+          <div class="hero-charm main-charm" id="hero-art"></div>
+          <div class="mini-postcard">
+            <span class="postcard-label">a little pocket sunshine</span>
+            <div id="postcard-art"></div>
+            <span class="postcard-script">picked for you</span>
+          </div>
+          <span class="scene-star star-one">✧</span
+          ><span class="scene-star star-two">☆</span
+          ><span class="round-stamp"
+            >100%<br /><b>your vibe</b><br />0% ordinary</span
+          >
+          <div class="scene-bottom">
+            <span>THE EVERYDAY, BUT CUTER.</span><span>01 / LITTLE JOYS</span>
+          </div>
+        </div>
+      </section>
+      <div class="ribbon" aria-hidden="true">
+        <div>
+          FRESH FROM THE PATCH <span>☆</span> SILLY, LITTLE TOMATOES
+          <span>☆</span> MADE TO BE YOURS <span>☆</span> FRESH FROM THE PATCH
+          <span>☆</span> SILLY, LITTLE TOMATOES <span>☆</span> MADE TO BE YOURS
+          <span>☆</span>
+        </div>
+      </div>
+      <section
+        class="section-wrap collection"
+        id="shop"
+        aria-labelledby="shop-heading"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE READY-MADE PATCH</p>
+            <h2 id="shop-heading">
+              Harvested especially for <span class="borel">you.</span>
+            </h2>
+          </div>
+          <p>
+            Good together, right from the start.<br />Pick a favorite or make it
+            your own.
+          </p>
+        </div>
+        <p class="demo-note">
+          Illustrative designs & prices. Real product photos are coming with the
+          artist’s collection.
+        </p>
+        <div class="product-grid" id="products" data-limit="3"></div>
+        <div class="collection-more">
+          <a class="button secondary" href="ideas.html"
+            >See all predesigned ideas <span>→</span></a
+          >
+        </div>
+      </section>
+      <section
+        id="build"
+        class="section-wrap how-section"
+        aria-labelledby="how-heading"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">FROM OUR PATCH TO YOUR POCKET</p>
+            <h2 id="how-heading">
+              Time for a little <span class="borel">harvest</span> !
+            </h2>
+          </div>
+        </div>
+        <div class="how-grid">
+          <article>
+            <span class="how-icon">01 <span>♡</span></span>
+            <h3>Decide where your tomato will go.</h3>
+            <p>Choose from a variety of clasps, including phone dust plugs.</p>
+          </article>
+          <article>
+            <span class="how-icon"
+              >02
+              <span
+                ><img class="tomato-icon" src="assets/tomato-icon.png" /></span
+            ></span>
+            <h3>Pick a silly, little tomato.</h3>
+            <p>
+              Pick from a serious tomato, a grumpy tomato, a birthday boy or girl, and many more. Pick the
+              one that feels like you.
+            </p>
+          </article>
+          <article>
+            <span class="how-icon">03 <span>☆</span></span>
+            <h3>Make little combinations.</h3>
+            <p>
+              Mix colors and bead shapes across up to three strands. See every
+              detail come together in the studio.
+            </p>
+          </article>
+
+          <div class="how-cta">
+            <a class="button primary builder-card" href="studio.html"
+              >Harvest your own <span>↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+      <section
+        class="artist-section section-wrap"
+        id="artist"
+        aria-labelledby="artist-heading"
+      >
+        <div class="artist-art">
+          <div class="artist-paper">
+            <span class="eyebrow">NOTES FROM THE STUDIO</span>
+            <div id="artist-art"></div>
+            <span class="borel">handcrafting little silliness</span>
+          </div>
+          <span class="artist-star">☆</span>
+        </div>
+        <div class="artist-copy">
+          <p class="eyebrow">GREETINGS FROM THE OTHER SIDE</p>
+          <h2 id="artist-heading">
+            <span class="borel">Hellooo</span>
+          </h2>
+          <p>
+            I’m Valeria, an aspiring Machine Learning and Robotics Engineer by
+            day, and a lover of all craftsy things by night.
+          </p>
+          <p>
+            I started making these silly little tomato charms as a way to bring
+            more whimsy to my every day life. There’s something so special about
+            bringing your ideas to life and sharing it with the world. Each piece
+            is handmade with care, precision, and its own personality.
+          </p>
+          <p>
+            Thank you for being here and supporting my tiny shop. I hope these
+            little tomatoes bring you a bit of lightheartedness, wherever life
+            takes you.
+          </p>
+          <!--
+          <p class="artist-note" data-brand="artistNote">
+            Never stop dreaming and creating
+          </p>
+          -->
+          <a href="#contact" class="text-link"
+            >Say a little hello <span>↗</span></a
+          >
+        </div>
+      </section>
+      <section
+        class="section-wrap questions"
+        id="faq"
+        aria-labelledby="faq-heading"
+      >
+        <div>
+          <p class="eyebrow">GOOD LITTLE QUESTIONS</p>
+          <h2 id="faq-heading">Before you <span class="borel">pick.</span></h2>
+          <p>All the things you might be wondering.</p>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>How does the charm builder work?</summary>
+            <p>
+              Choose a clasp first, then a tomato personality. Dust plugs pair
+              with a small tomato. Phone loops, key rings, and lobster clasps
+              pair with a regular tomato.
+            </p>
+            <p>
+              For the dust plug, you can add 1-3 strands, with up to 3 beads per
+              strand. For the other clasps, you can add 1-3 strands, with up to
+              5 beads per strand.
+            </p>
+            <p>
+              Click any bead position to change its color and shape. Your
+              illustration and placeholder price update as you go.
+            </p>
+          </details>
+          <details>
+            <summary>What are the dimensions of the tomatoes?</summary>
+            <p>
+              There are two sizes at the moment: a small sized tomato and a
+              regular sized tomato.
+            </p>
+            <p>
+              The small sized tomato is only used for the dust plug option. The
+              dimensions are lxwxh and weigh about 20g. This is to promote
+              comfortability for the customer when using their phone.
+            </p>
+            <p>
+              The regular sized tomato can be used for the remaining clasp
+              options. The dimensions are lxwxh and weigh about 20g.
+            </p>
+          </details>
+          <details>
+            <summary>Can I order something from this preview?</summary>
+            <p id="order-faq">
+              You can build designs and try the bag. Payments are not open in
+              this preview. Ordering becomes available after the artist connects
+              the shop and finalizes products and policies.
+            </p>
+          </details>
+          <details>
+            <summary>Will a phone attachment fit my phone?</summary>
+            <p>
+              A phone loop needs a compatible case or attachment point, you can
+              simply wrap the charm about that point.
+            </p>
+            <p>
+              A dust plug has to match your phone’s port: USB-C (most Android
+              phones and iPhone 15 and newer) or lightning (older iPhones).
+            </p>
+            <p>
+              A plug made for a USB-C port will <strong>not</strong> fit a
+              lightning port and vise versa.
+            </p>
+          </details>
+          <details>
+            <summary>How do I care for a polymer clay charm?</summary>
+            <p>
+              Handle gently, avoid pulling the strands or bending the clay, and
+              wipe with a soft damp cloth. Keep away from prolonged heat and
+              soaking. These small accessories are not toys.
+            </p>
+          </details>
+          <details>
+            <summary>What about shipping, returns and custom orders?</summary>
+            <p>
+              The artist is finalizing dispatch times, delivery regions,
+              shipping charges, and return terms. Confirmed policies must be
+              published before orders open.
+            </p>
+          </details>
+        </div>
+      </section>
+      <section
+        class="review-section section-wrap"
+        aria-labelledby="reviews-heading"
+      >
+        <span class="review-stars" aria-hidden="true">☆ ☆ ☆</span>
+        <p class="eyebrow">NOTES FOR THE PATCH</p>
+        <h2 id="reviews-heading">
+          Room for a little <span class="borel">love.</span>
+        </h2>
+        <p>
+          No customer reviews yet. This space is saved for real stories<br />from
+          the first little tomatoes out in the world.
+        </p>
+      </section>
+      <section
+        class="contact-section"
+        id="contact"
+        aria-labelledby="contact-heading"
+      >
+        <div class="section-wrap">
+          <div>
+            <p class="eyebrow">LET’S TALK TOMATOES</p>
+            <h2 id="contact-heading">
+              A question? A little idea?<br /><span class="borel"
+                >Say hello.</span
+              >
+            </h2>
+            <p>For product questions, custom ideas, or just a friendly wave.</p>
+          </div>
+          <div class="contact-card">
+            <h3>A little note to the studio</h3>
+            <p id="contact-description">
+              The artist’s contact details will be added before the shop opens.
+            </p>
+            <a class="button primary" id="contact-link" hidden
+              >Email the studio ↗</a
+            ><span id="contact-placeholder" class="contact-placeholder"
+              >Contact opening soon <span>♡</span></span
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="section-wrap">
+      <a class="wordmark" href="#main" data-brand-lead="name"
+        >Heirloom Studio<span class="wordmark-sub" data-brand="footerTagline"
+          >handcrafted by valeria</span
+        ></a
+      >
+      <div>
+        <a href="#shop">Shop</a><a href="#faq">FAQs & Care</a
+        ><a href="#contact">Contact</a>
+      </div>
+      <p>
+        © <span id="year">2026</span>
+        <span data-brand="title">Heirloom Studio</span><br />
+      </p>
+    </footer>
+    <dialog id="bag" aria-labelledby="bag-title">
+      <div class="bag-top">
+        <h2 id="bag-title">Your little <span class="borel">bag.</span></h2>
+        <button class="icon-button" id="close-bag" aria-label="Close bag">
+          ×
+        </button>
+      </div>
+      <div id="bag-items"></div>
+      <div class="bag-bottom">
+        <div class="subtotal"><span>Subtotal</span><b id="bag-total"></b></div>
+        <p id="cart-note">Preview bag · no payment will be collected.</p>
+        <p class="checkout-error" id="checkout-error" role="alert"></p>
+        <button class="button primary" id="checkout" disabled>
+          Checkout opens soon</button
+        ><button class="subtle-button" id="continue-shopping">
+          Keep picking →
+        </button>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <noscript
+      ><div class="noscript">
+        Please enable JavaScript to use the charm studio and shopping bag.
+      </div></noscript
+    >
+  </body>
+</html>

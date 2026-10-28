@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f8f5eb" />
+    <title>Heirloom Studio — Tiny charms, big personality.</title>
+    <meta
+      name="description"
+      content="A little tomato, a lot of personality. Explore handmade-inspired tomato charms or build your own with colorful beads and your favorite clasp."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="announcement">
+      <span data-brand="announcement">☆ Grand opening November 2026! ☆</span>
+      <!--
+      <span class="preview-badge" id="mode-label"
+        >STOREFRONT PREVIEW · PRICES ARE PLACEHOLDERS</span
+      >
+      -->
+    </div>
+    <header class="site-header">
+      <a
+        class="wordmark"
+        href="#"
+        aria-label="Heirloom Studio home"
+        data-brand-home
+        ><span class="logo-tomato" aria-hidden="true"
+          ><img src="assets/tomato-faceless.png" class="tomato-icon" /></span
+        ><span data-brand-lead="name"
+          >Heirloom Studio<span class="wordmark-sub" data-brand="sub"
+            >handcrafted by valeria</span
+          ></span
+        ></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="index.html">Shop the patch</a
+        ><a href="#studio">Build your own</a
+        ><a href="index.html#artist">Our little story</a>
+      </nav>
+      <button
+        class="bag-button"
+        id="open-bag"
+        aria-haspopup="dialog"
+        aria-controls="bag"
+      >
+        <svg
+          width="20"
+          height="22"
+          viewBox="0 0 24 25"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M4 8h16l1 15H3L4 8Z" />
+          <path d="M8 9V6a4 4 0 018 0v3" /></svg
+        ><span>Bag</span><span class="bag-count" id="bag-count">0</span>
+      </button>
+    </header>
+    <main id="main">
+    <section
+      class="studio-section"
+      id="studio"
+      aria-labelledby="studio-heading"
+    >
+      <div class="section-wrap">
+        <div class="studio-intro">
+          <p class="eyebrow" data-brand="studioName">
+            THE STUDIO
+          </p>
+          <h2 id="studio-heading">
+            A little bit of this, a little of <span class="borel">you.</span>
+          </h2>
+          <p>
+            Pick your clasp, meet your tomato, and dress it up with beads.<br />
+            We’ll show you as you go.
+          </p>
+        </div>
+        <div class="builder">
+          <div class="preview-window">
+            <div class="window-label">
+              <span><i class="live-dot"></i> YOUR LITTLE CREATION</span>
+            </div>
+            <div class="preview-tools" role="group" aria-label="Design tools">
+              <button
+                class="tool-button"
+                id="undo-design"
+                aria-label="Undo last change"
+                disabled
+              >
+                <span aria-hidden="true">↶</span
+                ><span class="tool-text"> Undo</span></button
+              ><button
+                class="tool-button"
+                id="redo-design"
+                aria-label="Redo change"
+                disabled
+              >
+                <span aria-hidden="true">↷</span
+                ><span class="tool-text"> Redo</span></button
+              ><button class="tool-button" id="shuffle-design">
+                <span aria-hidden="true">☆</span> Surprise me</button
+              ><button class="tool-button" id="reset-design">
+                Start fresh <span aria-hidden="true">↺</span></button
+              ><output
+                class="tool-total"
+                id="preview-total"
+                aria-hidden="true"
+              ></output>
+            </div>
+            <p class="editing-note" id="editing-note" hidden>
+              <span>Editing a design from your bag.</span>
+              <button class="subtle-button" id="cancel-edit">
+                Stop editing
+              </button>
+            </p>
+            <div class="design-stage" id="design-stage"></div>
+            <div class="preview-caption">
+              <span class="borel" id="design-name">Hello, Sunny.</span>
+              <p>
+                Illustrated preview · colors & proportions may vary · tap a bead
+                to change it
+              </p>
+            </div>
+            <div class="preview-actions">
+              <button data-action="save-image" class="save-design">
+                ↓ Save your design image</button
+              ><button data-action="copy-link" class="save-design">
+                ⎘ Copy a link to this design
+              </button>
+            </div>
+          </div>
+          <div class="controls-window">
+            <div class="step-tabs" role="group" aria-label="Builder steps">
+              <button data-step="0" aria-pressed="true">
+                <span>01</span> Clasp</button
+              >              <button data-step="1" aria-pressed="false">
+                <span>02</span> Tomato</button
+              ><button data-step="2" aria-pressed="false">
+                <span>03</span> Beads
+              </button>
+            </div>
+            <div id="step-content" class="step-content"></div>
+            <div class="builder-bottom">
+              <details class="price-details">
+                <summary>
+                  <span>Your one-of-a-kind</span><b id="builder-price"></b>
+                </summary>
+                <dl id="price-breakdown"></dl>
+              </details>
+              <p
+                id="builder-availability"
+                role="status"
+                class="availability-note"
+              ></p>
+              <div class="builder-actions">
+                <button id="previous-step" class="button secondary">
+                  ← Back</button
+                ><button id="next-step" class="button primary">
+                  Next: choose tomato →</button
+                ><button id="add-custom" class="button primary" hidden>
+                  Add to bag <span>+</span>
+                </button>
+              </div>
+              <p class="microcopy" id="builder-price-note">
+                Placeholder USD pricing · shipping & tax not included
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section
+      class="section-wrap collection"
+      aria-labelledby="inspiration-heading"
+    >
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE READY-MADE PATCH</p>
+          <h2 id="inspiration-heading">
+            Need a little <span class="borel">inspo?</span>
+          </h2>
+        </div>
+        <p>Here are a few predesigned tomato charms from the artist.</p>
+      </div>
+      <p class="demo-note">
+        Illustrative designs &amp; prices. Real product photos are coming with
+        the artist’s collection.
+      </p>
+      <div
+        class="product-grid"
+        id="inspiration-products"
+        data-limit="3"
+      ></div>
+      <div class="collection-more">
+        <a class="button secondary" href="ideas.html"
+          >See more <span>→</span></a
+        >
+      </div>
+    </section>
+    </main>
+    <footer class="section-wrap">
+      <a class="wordmark" href="index.html" data-brand-lead="name"
+        >Heirloom Studio<span class="wordmark-sub" data-brand="footerTagline"
+          >TINY CHARMS. BIG PERSONALITY.</span
+        ></a
+      >
+      <a href="index.html">Back to the shop</a>
+    </footer>
+    <dialog id="bag" aria-labelledby="bag-title">
+      <div class="bag-top">
+        <h2 id="bag-title">Your little <span class="borel">bag.</span></h2>
+        <button class="icon-button" id="close-bag" aria-label="Close bag">
+          ×
+        </button>
+      </div>
+      <div id="bag-items"></div>
+      <div class="bag-bottom">
+        <div class="subtotal"><span>Subtotal</span><b id="bag-total"></b></div>
+        <p id="cart-note">Preview bag · no payment will be collected.</p>
+        <p class="checkout-error" id="checkout-error" role="alert"></p>
+        <button class="button primary" id="checkout" disabled>
+          Checkout opens soon</button
+        ><button class="subtle-button" id="continue-shopping">
+          Keep picking →
+        </button>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <noscript>
+      <div class="noscript">
+        Please enable JavaScript to use the charm studio and shopping bag.
+      </div>
+    </noscript>
+  </body>
+</html>

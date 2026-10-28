@@ -1,0 +1,19 @@
+# Cloudflare Worker for the Little Tomato checkout API. Deploy from this folder with `npx wrangler deploy`.
+# Nothing secret belongs in this file. See server/README.md.
+name = "little-tomato-checkout"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[triggers]
+crons = ["17 4 * * *"]            # daily: delete this API's abandoned draft orders
+
+[vars]
+SHOPIFY_SHOP = ""                  # store subdomain only, e.g. "little-tomato" (not .myshopify.com)
+SHOPIFY_API_VERSION = "2026-10"
+CURRENCY = "USD"
+ALLOWED_ORIGINS = ""               # exact site origins, comma separated, e.g. "https://littletomato.example"
+VARIANTS_JSON = "{}"               # {"assembly":"gid://shopify/ProductVariant/…", …} for every catalog key
+DRAFT_MAX_AGE_HOURS = "72"
+ORDER_WEBHOOKS = "off"             # "on" only after the orders/create webhook points at /webhooks/orders-create
+
+# Secrets (run once each):  wrangler secret put SHOPIFY_CLIENT_ID | SHOPIFY_CLIENT_SECRET | TURNSTILE_SECRET (optional)
