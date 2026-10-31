@@ -58,7 +58,7 @@ test('checkout posts the bag, not prices, and accepts only an https link on an a
 });
 
 test('server refusals show their short customer-safe message; anything odd becomes a generic one',async()=>{
- await withFetch(reply(409,{error:'unavailable',message:'Some picks are sold out.',unavailable:['tomato-wink']}),()=>assert.rejects(createCheckout(bag,api),e=>e.message==='Some picks are sold out.'&&e.status===409&&e.code==='unavailable'));
+ await withFetch(reply(409,{error:'unavailable',message:'Some picks are sold out.',unavailable:['tomato-formal']}),()=>assert.rejects(createCheckout(bag,api),e=>e.message==='Some picks are sold out.'&&e.status===409&&e.code==='unavailable'));
  await withFetch(reply(500,{message:'x'.repeat(500)}),()=>assert.rejects(createCheckout(bag,api),/could not be reached/));
  await withFetch(async()=>new Response('<html>oops</html>',{status:502}),()=>assert.rejects(createCheckout(bag,api),/could not be reached/));
  await withFetch(async()=>{throw new TypeError('network down')},()=>assert.rejects(createCheckout(bag,api),/could not be reached/));

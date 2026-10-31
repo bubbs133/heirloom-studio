@@ -12,7 +12,7 @@ export const SHOP = {
     artistNote: 'Always fight for your dreams',
     provisional: false
   },
-  email: 'avaleria1x969@gmail.com', // Artist's public business email. Contact stays unavailable until set.
+  email: 'heirloomstudio133@gmail.com', // Artist's public business email. Contact stays unavailable until set.
   currency: 'USD',
   // Checkout API (server/), run by the artist. This is the path for real orders: the browser sends designs
   // only and the server prices, validates and creates the Shopify checkout. See server/README.md.

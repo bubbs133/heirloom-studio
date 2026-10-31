@@ -8,8 +8,8 @@ import {
   CLASPS,
   PRODUCTS,
   defaultDesign,
-  catalogEntries,
   bead,
+  beadName,
 } from "./catalog.js";
 import {
   clone,
@@ -18,6 +18,7 @@ import {
   restoreDesign,
   sanitizeCart,
   priceDesign,
+  priceSummary,
   components,
   itemComponents,
   describeDesign,
@@ -73,7 +74,7 @@ let design = saved,
 if (shared) {
   design = clone(shared);
   hist = commit(hist, design);
-  step = 2;
+  step = 3;
 }
 let prices = { ...demoPrices },
   availability = {},
@@ -132,13 +133,98 @@ function renderProducts() {
   const container = $("#products") || $("#inspiration-products");
   if (!container) return;
   const limit = Number(container.dataset.limit) || PRODUCTS.length;
-  container.innerHTML = PRODUCTS.slice(0, limit).map(
-    (p) =>
-      `<article class="product-card"><div class="product-visual ${p.background}"><span class="product-tag">${esc(p.tag)}</span>${charmSVG(p.design, { decorations: true })}</div><div class="product-info"><div class="product-title"><h3>${esc(p.name)}</h3><b>${fmt(price("product-" + p.id))}</b></div><p>${esc(p.description)}</p><p class="product-specs">${TOMATO_SIZES.find((s) => s.id === (p.design.tomatoSize || "regular")).name} tomato · dimensions and weight to be confirmed<br />Bead and clasp dimensions to be confirmed</p><div class="product-buttons"><button class="button" data-add-product="${p.id}" ${purchasable([{ key: "product-" + p.id }]) ? "" : "disabled"}>${purchasable([{ key: "product-" + p.id }]) ? "Add to bag +" : liveReady ? "Sold out" : "Unavailable"}</button><button class="subtle-button" data-customize="${p.id}">Make it yours ↗</button></div></div></article>`,
-  ).join("");
+  container.innerHTML = PRODUCTS.slice(0, limit)
+    .map(
+      (p) =>
+        `<article class="product-card"><div class="product-visual ${p.background}"><span class="product-tag">${esc(p.tag)}</span>${charmSVG(p.design, { decorations: true })}</div><div class="product-info"><div class="product-title"><h3>${esc(p.name)}</h3><b>${fmt(price("product-" + p.id))}</b></div><p>${esc(p.description)}</p><p class="product-specs">${TOMATO_SIZES.find((s) => s.id === (p.design.tomatoSize || "regular")).name} tomato · dimensions and weight to be confirmed<br />Bead and clasp dimensions to be confirmed</p><div class="product-buttons"><button class="button" data-add-product="${p.id}" ${purchasable([{ key: "product-" + p.id }]) ? "" : "disabled"}>${purchasable([{ key: "product-" + p.id }]) ? "Add to bag +" : liveReady ? "Sold out" : "Unavailable"}</button></div></div></article>`,
+    )
+    .join("");
 }
 const beadSVG = (b) =>
-  `<svg viewBox="-24 -24 48 48" aria-hidden="true">${beadArt(b, 0, 0, 15, ARTWORK.beads[`${b.color}-${b.type}`])}</svg>`;
+  `<svg viewBox="-24 -24 48 48" aria-hidden="true">${beadArt(b, 0, 0, 15, ARTWORK.beads[`${b.color}-${b.type}`], ARTWORK.beadFit?.[`${b.color}-${b.type}`])}</svg>`;
+const imageList = (artwork) =>
+  Array.isArray(artwork)
+    ? artwork.filter((url) => typeof url === "string" && url)
+    : typeof artwork === "string" && artwork
+      ? [artwork]
+      : [];
+const beadPhotos = (color, type) =>
+  imageList(ARTWORK.beadGallery?.[`${color}-${type}`] ?? ARTWORK.beads[`${color}-${type}`]);
+const tomatoPhotos = (tomato) =>
+  imageList(ARTWORK.tomatoes[tomato]);
+let imageGallery = null;
+function galleryPhotos() {
+  if (!imageGallery) return [];
+  return imageGallery.kind === "tomato"
+    ? tomatoPhotos(imageGallery.tomato)
+    : beadPhotos(imageGallery.color, imageGallery.type);
+}
+function renderImageGallery() {
+  if (!imageGallery) return;
+  const { kind, index } = imageGallery;
+  const photos = galleryPhotos();
+  const photo = $("#photo-gallery-photo");
+  const art = $("#photo-gallery-art");
+  const imageId =
+    kind === "tomato"
+      ? imageGallery.tomato
+      : `${imageGallery.color}-${imageGallery.type}`;
+  let title;
+  let illustration;
+  if (kind === "tomato") {
+    const tomato = TOMATOES.find((item) => item.id === imageGallery.tomato);
+    title = `${tomato.name} tomato`;
+    illustration = tomatoIcon(tomato.id, 280, "");
+  } else {
+    const color = COLORS.find((item) => item.id === imageGallery.color);
+    const type = TYPES.find((item) => item.id === imageGallery.type);
+    title = `${beadName(color.id, type.id)} bead`;
+    illustration = beadSVG({ color: color.id, type: type.id });
+  }
+  photo.onerror = null;
+  $("#photo-gallery-title").textContent = title;
+  $("#photo-gallery-count").textContent = photos.length
+    ? `Photo ${index + 1} of ${photos.length}`
+    : `Illustrated preview · ${kind} photos coming soon`;
+  $(".photo-gallery-view").classList.toggle("single-photo", photos.length < 2);
+  $("#photo-gallery-previous").hidden = photos.length < 2;
+  $("#photo-gallery-next").hidden = photos.length < 2;
+  photo.hidden = !photos.length;
+  art.hidden = Boolean(photos.length);
+  art.innerHTML = illustration;
+  photo.onerror = () => {
+    if (
+      !imageGallery ||
+      imageGallery.kind !== kind ||
+      (kind === "tomato"
+        ? imageGallery.tomato !== imageId
+        : `${imageGallery.color}-${imageGallery.type}` !== imageId) ||
+      imageGallery.index !== index
+    )
+      return;
+    photo.hidden = true;
+    art.hidden = false;
+    $("#photo-gallery-count").textContent =
+      "This photo could not load · showing the illustrated preview";
+  };
+  if (photos.length) {
+    photo.alt = `${title}, view ${index + 1} of ${photos.length}`;
+    photo.src = photos[index];
+  } else {
+    photo.removeAttribute("src");
+    photo.alt = "";
+  }
+}
+function openBeadGallery(color, type) {
+  imageGallery = { kind: "bead", color, type, index: 0 };
+  renderImageGallery();
+  $("#photo-gallery").showModal();
+}
+function openTomatoGallery(tomato) {
+  imageGallery = { kind: "tomato", tomato, index: 0 };
+  renderImageGallery();
+  $("#photo-gallery").showModal();
+}
 function renderBuilder(focusHeading = false) {
   if (!$("#design-stage")) return;
   const focusKey = document.activeElement?.dataset.focus;
@@ -148,7 +234,7 @@ function renderBuilder(focusHeading = false) {
   selected[1] = Math.min(selected[1], design.strands[selected[0]].length - 1);
   $("#design-stage").innerHTML = charmSVG(design, {
     decorations: true,
-    selected: step === 2 ? selected : null,
+    selected: step === 3 ? selected : null,
     interactive: true,
   });
   $("#design-name").textContent =
@@ -160,22 +246,45 @@ function renderBuilder(focusHeading = false) {
     );
   let content = "";
   if (step === 0) {
-    const selectedClasp = CLASPS.find((clasp) => clasp.id === design.clasp);
-    content = `<h3 tabindex="-1">Choose your clasp.</h3><p class="step-description">Your clasp sets the tomato size and its base price. These are placeholder prices.</p><div class="clasp-options" role="group" aria-label="Clasp">${CLASPS.map((clasp) => {
-      const size = TOMATO_SIZES.find((item) => item.id === clasp.tomatoSize);
-      return `<button class="clasp-option" data-clasp="${clasp.id}" data-focus="clasp-${clasp.id}" aria-pressed="${design.clasp === clasp.id}" ${purchasable([{ key: "clasp-" + clasp.id }, { key: "tomato-size-" + size.id }]) ? "" : "disabled"}><svg viewBox="-40 0 80 95" aria-hidden="true">${claspArt(clasp.id)}</svg><b>${esc(clasp.name)}</b><small>${esc(size.name)} tomato · ${fmt(price("tomato-size-" + size.id))} base</small><small>${fmt(price("clasp-" + clasp.id))} clasp · dimensions to be confirmed</small></button>`;
-    }).join("")}</div><p class="clasp-detail">${esc(selectedClasp.detail)} · ${selectedClasp.dimensions ? esc(selectedClasp.dimensions) : "Dimensions to be confirmed"}</p><p class="size-note">Dust plugs use a Small tomato; phone loop, key ring, and lobster clasp use Regular. Tomato dimensions and weight are to be confirmed.</p>`;
+    const keychainPrice =
+      price("assembly") + price("tomato-size-regular") + price("clasp-ring");
+    const phoneCharmPrice =
+      price("assembly") + price("tomato-size-small") + price("clasp-dust-usbc");
+    content = `<h3 tabindex="-1">What are you looking to build?</h3><p class="step-description">Choose a keychain charm for everyday things like your keys or clipped onto your bag, or choose a smaller charm to decorate your phone.</p><div class="build-options" role="group" aria-label="Charm type"><button class="build-option" data-build-type="keychain" data-focus="build-keychain" aria-pressed="${!design.clasp.startsWith("dust-")}"><b>Keychain charm · starts at ${fmt(keychainPrice)}</b><small>Includes: </br>☆ One regular sized tomato 2<strong>.</strong>6cm × 2<strong>.</strong>5cm × 2<strong>.</strong>2cm</br>☆ one clasp of your choice </br>☆ one strand of 3 beads of your choice </br>☆ one star bead </br> Extra strands and beads can be added at a little extra cost.</small></button><button class="build-option" data-build-type="phone" data-focus="build-phone" aria-pressed="${design.clasp.startsWith("dust-")}"><b>Phone charm · starts at ${fmt(phoneCharmPrice)}</b><small>Includes: </br>☆ One small sized tomato </br>☆ one dust plug of your choice </br>☆ one strand of 3 beads of your choice </br> ☆ one star bead </br>Extra strands and beads can be added at a little extra cost.</small></button></div>`;
   }
   if (step === 1) {
-    const activeSize = TOMATO_SIZES.find((size) => size.id === design.tomatoSize);
-    const selectedTomato = TOMATOES.find((tomato) => tomato.id === design.tomato);
-    const tomatoTotal = price("tomato-size-" + activeSize.id) + price("tomato-" + selectedTomato.id);
-    content = `<h3 tabindex="-1">Pick your tomato.</h3><p class="step-description">Your clasp pairs with a ${esc(activeSize.name)} tomato. Size is set by your clasp.</p><p class="tomato-size-summary">Tomato size: <b>${esc(activeSize.name)}</b> · Base price: <b>${fmt(price("tomato-size-" + activeSize.id))}</b></p><p class="editor-label tomato-size-label">Choose a personality <small>Placeholder mood extras</small></p><div class="tomato-options" role="group" aria-label="Tomato expressions">${TOMATOES.map((t) => `<button class="tomato-option" data-tomato="${t.id}" data-focus="tomato-${t.id}" aria-pressed="${design.tomato === t.id}" ${purchasable([{ key: "tomato-" + t.id }]) ? "" : "disabled"}>${tomatoIcon(t.id)}<span class="option-text"><b>${esc(t.name)}</b><small>${esc(t.mood)}</small><em>${price("tomato-" + t.id) ? "+" + fmt(price("tomato-" + t.id)) + " extra" : "Included"}${availability["tomato-" + t.id] === false ? " · sold out" : ""}</em></span></button>`).join("")}</div><p class="tomato-price-summary">Tomato total: <b>${fmt(tomatoTotal)}</b> <small>(${fmt(price("tomato-size-" + activeSize.id))} base + ${fmt(price("tomato-" + selectedTomato.id))} mood)</small></p><p class="size-note">Placeholder pricing only. Tomato dimensions and weight are to be confirmed.</p>`;
+    const selectedClasp = CLASPS.find((clasp) => clasp.id === design.clasp);
+    const claspOptions = design.clasp.startsWith("dust-")
+      ? CLASPS.filter((clasp) => clasp.id.startsWith("dust-"))
+      : CLASPS.filter((clasp) => !clasp.id.startsWith("dust-"));
+    const isPhoneCharm = design.clasp.startsWith("dust-");
+    const startingPrice =
+      price("assembly") +
+      price("tomato-size-" + selectedClasp.tomatoSize) +
+      price("clasp-" + selectedClasp.id);
+    content = `<h3 tabindex="-1">Choose your ${isPhoneCharm ? "dust plug" : "keychain clasp"}.</h3><p class="step-description">${isPhoneCharm ? `Phone charms start at ${fmt(startingPrice)} and include a small sized tomato, the dust plug of your choice, one strand of 3 beads of your choice, and one star bead. Extra strands and beads can be added at an extra cost.` : `Pick one clasp of your choice. Where will your tomato go?`}</p><div class="clasp-options" role="group" aria-label="${isPhoneCharm ? "Dust plug" : "Keychain clasp"}">${claspOptions
+      .map((clasp) => {
+        return `<button class="clasp-option" data-clasp="${clasp.id}" data-focus="clasp-${clasp.id}" aria-pressed="${design.clasp === clasp.id}" ${purchasable([{ key: "clasp-" + clasp.id }, { key: "tomato-size-" + clasp.tomatoSize }]) ? "" : "disabled"}><svg viewBox="-40 0 80 95" aria-hidden="true">${claspArt(clasp.id)}</svg><b>${esc(clasp.name)}</b><small>Included in starting price</small></button>`;
+      })
+      .join(
+        "",
+      )}</div><p class="clasp-detail">${esc(selectedClasp.detail)} · ${selectedClasp.dimensions ? esc(selectedClasp.dimensions) : "Dimensions to be confirmed"}</p><p class="size-note">Tomato dimensions and weight are to be confirmed.</p>`;
   }
   if (step === 2) {
+    content = `<h3 tabindex="-1">Pick your tomato.</h3><p class="step-description">Pick one regular sized tomato. What kind of personality will your tomato have? Enlarge a tomato to see its photos from every side.</p><p class="editor-label tomato-size-label">Choose a personality</p><div class="tomato-options" role="group" aria-label="Tomato expressions">${TOMATOES.map((t) => {const views=tomatoPhotos(t.id).length;const surcharge=price("tomato-"+t.id);const priceLabel=surcharge===0?`${fmt(surcharge)} · included`:`+${fmt(surcharge)} extra`;return `<article class="tomato-option-card"><button class="tomato-option" data-tomato="${t.id}" data-focus="tomato-${t.id}" aria-pressed="${design.tomato===t.id}" ${purchasable([{key:"tomato-"+t.id}])?"":"disabled"}>${tomatoIcon(t.id)}<span class="option-text"><b>${esc(t.name)}</b><small>${priceLabel}</small></span></button><button class="tomato-option-zoom" data-tomato-gallery="${t.id}" aria-label="Enlarge ${esc(t.name)} tomato${views>1?`, ${views} photos`:''}">Enlarge${views>1?` · ${views} views`:''} ↗</button></article>`;}).join("")}</div><p class="size-note">Tomato dimensions and weight are to be confirmed.</p>`;
+  }
+  if (step === 3) {
     const active = design.strands[selected[0]][selected[1]];
-    content = `<h3 tabindex="-1">String a little happiness.</h3><p class="step-description">Choose a bead position, then its color and shape.</p><div class="strand-count"><span>Strands <small>(${fmt(price("strand"))} each)</small></span><div class="count-picker" role="group" aria-label="Number of strands">${[1, 2, 3].map((n) => `<button data-strands="${n}" data-focus="strands-${n}" aria-label="${n} ${n === 1 ? "strand" : "strands"}" aria-pressed="${design.strands.length === n}">${n}</button>`).join("")}</div></div><div class="strands-editor">${design.strands.map((strand, i) => `<div class="strand-row"><span class="strand-name">Strand ${i + 1}</span><div class="bead-slots" role="group" aria-label="Strand ${i + 1} bead positions, top to bottom">${strand.map((b, j) => `<button class="bead-slot" data-slot="${i},${j}" data-focus="slot-${i}-${j}" aria-pressed="${selected[0] === i && selected[1] === j}" aria-label="Strand ${i + 1}, bead ${j + 1}: ${COLORS.find((c) => c.id === b.color).name} ${TYPES.find((t) => t.id === b.type).name}">${beadSVG(b)}</button>`).join("")}</div><div class="bead-length"><button data-length="${i},-1" data-focus="shorter-${i}" aria-label="Remove last bead from strand ${i + 1}" ${strand.length === 1 ? "disabled" : ""}>−</button><button data-length="${i},1" data-focus="longer-${i}" aria-label="Add bead to strand ${i + 1}" ${strand.length === 5 ? "disabled" : ""}>+</button></div></div>`).join("")}</div><div class="editor-label"><span>Bead ${selected[1] + 1} · strand ${selected[0] + 1}</span><small>${esc(COLORS.find((c) => c.id === active.color).name)}</small></div><div class="bead-move" role="group" aria-label="Move this bead within strand ${selected[0] + 1}"><button data-move="-1" data-focus="move-earlier" ${selected[1] === 0 ? "disabled" : ""}>← Move earlier</button><button data-move="1" data-focus="move-later" ${selected[1] === design.strands[selected[0]].length - 1 ? "disabled" : ""}>Move later →</button></div><div class="colors" role="group" aria-label="Bead color">${COLORS.map((c) => `<button class="color-option" data-color="${c.id}" data-focus="color-${c.id}" style="background:${c.hex}" title="${esc(c.name)}" aria-label="${esc(c.name)}" aria-pressed="${active.color === c.id}" ${purchasable([{ key: "bead-" + c.id + "-" + active.type }]) ? "" : "disabled"}></button>`).join("")}</div><p class="editor-label">Make it a little different <small>Price per bead</small></p><div class="shape-options" role="group" aria-label="Bead shape">${TYPES.map((t) => `<button class="shape-option" data-type="${t.id}" data-focus="type-${t.id}" aria-pressed="${active.type === t.id}" ${purchasable([{ key: "bead-" + active.color + "-" + t.id }]) ? "" : "disabled"}>${esc(t.name)}<small>${t.dimensions ? esc(t.dimensions) : "Size to be confirmed"}</small><small>${fmt(price("bead-" + active.color + "-" + t.id))} each</small></button>`).join("")}</div><p class="editor-help">1–5 beads per strand · shown top to bottom, left to right.</p>`;
-    const beadLimit = CLASPS.find((clasp) => clasp.id === design.clasp).maxBeads;
+    const clasp = CLASPS.find((item) => item.id === design.clasp);
+    const hasIncludedBeads = clasp.includedStrands > 0;
+    const strandPricing = hasIncludedBeads
+      ? `1 included; ${fmt(price("strand"))} per extra`
+      : `${fmt(price("strand"))} each`;
+    const pricingNote = hasIncludedBeads
+      ? "Includes 1 strand with 3 beads; extra strands and beads are charged at the rates shown."
+      : "Extra strands and beads are charged at the rates shown.";
+    content = `<h3 tabindex="-1">Time to dress up your tomato.</h3><p class="step-description">Choose a bead position, pick a shape, then choose the bead you like. Use Enlarge to see a bead closer; extra photos will show its other sides.</p><div class="strand-count"><span>Strands <small>(${strandPricing})</small></span><div class="count-picker" role="group" aria-label="Number of strands">${[1, 2, 3].map((n) => `<button data-strands="${n}" data-focus="strands-${n}" aria-label="${n} ${n === 1 ? "strand" : "strands"}" aria-pressed="${design.strands.length === n}">${n}</button>`).join("")}</div></div><div class="strands-editor">${design.strands.map((strand, i) => `<div class="strand-row"><span class="strand-name">Strand ${i + 1}</span><div class="bead-slots" role="group" aria-label="Strand ${i + 1} bead positions, top to bottom">${strand.map((b, j) => `<button class="bead-slot" data-slot="${i},${j}" data-focus="slot-${i}-${j}" aria-pressed="${selected[0] === i && selected[1] === j}" aria-label="Strand ${i + 1}, bead ${j + 1}: ${esc(beadName(b.color,b.type === "pearl" ? "round" : b.type))}">${beadSVG(b)}</button>`).join("")}</div><div class="bead-length"><button data-length="${i},-1" data-focus="shorter-${i}" aria-label="Remove last bead from strand ${i + 1}" ${strand.length === 1 ? "disabled" : ""}>−</button><button data-length="${i},1" data-focus="longer-${i}" aria-label="Add bead to strand ${i + 1}" ${strand.length === 5 ? "disabled" : ""}>+</button></div></div>`).join("")}</div><div class="editor-label"><span>Bead ${selected[1] + 1} · strand ${selected[0] + 1}</span><small>${esc(beadName(active.color,active.type === "pearl" ? "round" : active.type))}</small></div><div class="bead-move" role="group" aria-label="Move this bead within strand ${selected[0] + 1}"><button data-move="-1" data-focus="move-earlier" ${selected[1] === 0 ? "disabled" : ""}>← Move earlier</button><button data-move="1" data-focus="move-later" ${selected[1] === design.strands[selected[0]].length - 1 ? "disabled" : ""}>Move later →</button></div><p class="editor-label">Choose a bead shape</p><div class="shape-options" role="group" aria-label="Bead shape">${TYPES.map((t) => `<button class="shape-option" data-type="${t.id}" data-focus="type-${t.id}" aria-pressed="${active.type === t.id}" ${purchasable([{ key: "bead-" + active.color + "-" + t.id }]) ? "" : "disabled"}>${esc(t.label)}<small>Choose shape</small></button>`).join("")}</div><p class="editor-label">Choose a bead <small>${esc(TYPES.find((t) => t.id === active.type).label)}</small></p><div class="bead-options" role="group" aria-label="${esc(TYPES.find((t) => t.id === active.type).label)} bead options">${COLORS.map((c) => {const key=`${c.id}-${active.type}`;const views=beadPhotos(c.id,active.type).length;const label=c.id==="cream"&&active.type==="bow"?"White star bow":c.name;return `<article class="bead-option"><button class="bead-option-select" data-bead-option="${c.id},${active.type}" data-focus="bead-${c.id}-${active.type}" aria-pressed="${active.color===c.id}" ${purchasable([{key:"bead-"+key}])?"":"disabled"}>${beadSVG({color:c.id,type:active.type})}<span>${esc(label)}</span><small>${fmt(price("bead-"+key))} per bead</small></button><button class="bead-option-zoom" data-gallery="${c.id},${active.type}" aria-label="View ${esc(beadName(c.id,active.type))} bead larger${views>1?`, ${views} photos`:''}">Enlarge${views>1?` · ${views} views`:''} ↗</button></article>`;}).join("")}</div><p class="editor-help">${pricingNote} 1–${clasp.maxBeads} beads per strand · shown top to bottom, left to right.</p>`;
+    const beadLimit = clasp.maxBeads;
     content = content.replace(
       /<button data-length="(\d+),1"([^>]*)>/g,
       (button, strandIndex, attributes) => {
@@ -187,33 +296,32 @@ function renderBuilder(focusHeading = false) {
         return `<button data-length="${strandIndex},1"${cleaned}${disabled}>`;
       },
     );
-    content = content.replace(
-      "1–5 beads per strand",
-      `1–${beadLimit} beads per strand`,
-    );
   }
   $("#step-content").innerHTML = content;
+  document.querySelectorAll(".shape-option").forEach((button) => {
+    button.disabled = !COLORS.some((color) =>
+      purchasable([{ key: `bead-${color.id}-${button.dataset.type}` }]),
+    );
+  });
   {
     const total = fmt(priceDesign(design, prices));
     $("#builder-price").textContent = total;
     $("#preview-total").textContent = total;
   }
-  const labels = Object.fromEntries(
-    catalogEntries().map(([k, v]) => [k, v.name]),
-  );
-  $("#price-breakdown").innerHTML = components(design)
+  $("#price-breakdown").innerHTML = priceSummary(design, prices)
     .map(
-      (c) =>
-        `<div class="price-row"><dt>${esc(labels[c.key])}${c.quantity > 1 ? " × " + c.quantity : ""}</dt><dd>${fmt(price(c.key) * c.quantity)}</dd></div>`,
+      (row) =>
+        `<div class="price-row"><dt>${esc(row.label)}</dt><dd>${fmt(row.amount)}</dd></div>`,
     )
     .join("");
   $("#previous-step").hidden = step === 0;
-  $("#next-step").hidden = step === 2;
-  $("#next-step").textContent =
-    step === 0
-      ? "Next: choose tomato →"
-      : "Next: choose beads →";
-  $("#add-custom").hidden = step !== 2;
+  $("#next-step").hidden = step === 3;
+  $("#next-step").textContent = [
+    "Next: choose attachment →",
+    "Next: choose tomato →",
+    "Next: choose beads →",
+  ][step];
+  $("#add-custom").hidden = step !== 3;
   $("#add-custom").innerHTML = editingId
     ? "Update bag <span>✓</span>"
     : "Add to bag <span>+</span>";
@@ -342,15 +450,43 @@ document.addEventListener("click", (event) => {
   if (hit && !busy) {
     const was = step;
     selected = hit.dataset.bead.split(",").map(Number);
-    step = 2;
-    renderBuilder(was !== 2);
+    step = 3;
+    renderBuilder(was !== 3);
     return;
   }
   const b = event.target.closest("button");
   if (!b || b.disabled || busy) return;
+  if (b.hasAttribute("data-gallery")) {
+    const [color, type] = b.dataset.gallery.split(",");
+    openBeadGallery(color, type);
+    return;
+  }
+  if (b.hasAttribute("data-tomato-gallery")) {
+    openTomatoGallery(b.dataset.tomatoGallery);
+    return;
+  }
   if (b.hasAttribute("data-step")) {
     step = Number(b.dataset.step);
     renderBuilder(true);
+  }
+  if (b.hasAttribute("data-build-type")) {
+    const clasp = CLASPS.find((item) =>
+      b.dataset.buildType === "phone"
+        ? item.id === "dust-usbc"
+        : item.id === "ring",
+    );
+    design.clasp = clasp.id;
+    design.tomatoSize = clasp.tomatoSize;
+    design.strands = [
+      [
+        ...(design.strands[0] || []).slice(0, 3),
+        ...Array.from(
+          { length: Math.max(0, 3 - (design.strands[0] || []).length) },
+          () => bead("pink"),
+        ),
+      ],
+    ];
+    updateDesign();
   }
   if (b.hasAttribute("data-tomato")) {
     design.tomato = b.dataset.tomato;
@@ -374,8 +510,9 @@ document.addEventListener("click", (event) => {
     if (delta < 0 && design.strands[i].length > 1) design.strands[i].pop();
     updateDesign();
   }
-  if (b.hasAttribute("data-color")) {
-    design.strands[selected[0]][selected[1]].color = b.dataset.color;
+  if (b.hasAttribute("data-bead-option")) {
+    const [color, type] = b.dataset.beadOption.split(",");
+    design.strands[selected[0]][selected[1]] = bead(color, type);
     updateDesign();
   }
   if (b.hasAttribute("data-type")) {
@@ -440,9 +577,32 @@ document.addEventListener("click", (event) => {
   }
   if (b.hasAttribute("data-close-bag")) $("#bag").close();
 });
+if ($("#photo-gallery")) {
+  $("#photo-gallery-close").onclick = () => $("#photo-gallery").close();
+  $("#photo-gallery-previous").onclick = () => {
+    if (!imageGallery) return;
+    const count = galleryPhotos().length;
+    if (count < 2) return;
+    imageGallery.index = (imageGallery.index + count - 1) % count;
+    renderImageGallery();
+  };
+  $("#photo-gallery-next").onclick = () => {
+    if (!imageGallery) return;
+    const count = galleryPhotos().length;
+    if (count < 2) return;
+    imageGallery.index = (imageGallery.index + 1) % count;
+    renderImageGallery();
+  };
+  $("#photo-gallery").addEventListener("click", (event) => {
+    if (event.target === $("#photo-gallery")) $("#photo-gallery").close();
+  });
+  $("#photo-gallery").addEventListener("close", () => {
+    imageGallery = null;
+  });
+}
 if ($("#design-stage")) {
   $("#next-step").onclick = () => {
-    step = Math.min(2, step + 1);
+    step = Math.min(3, step + 1);
     renderBuilder(true);
   };
   $("#previous-step").onclick = () => {
@@ -629,7 +789,7 @@ window.addEventListener("hashchange", () => {
   editingId = null;
   design = clone(d);
   hist = commit(hist, design);
-  step = 2;
+  step = 3;
   selected = [0, 0];
   renderBuilder(true);
   persist();

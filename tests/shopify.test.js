@@ -10,8 +10,8 @@ test('checkout requires an enabled and valid shop domain',()=>{
 });
 test('live catalog derives prices and availability from Shopify; currency mismatch blocks',async()=>{
  const original=global.fetch;let currency='USD';
- global.fetch=async(url,options)=>{assert.ok(url.includes('/2026-10/graphql.json'));assert.equal(options.headers['X-Shopify-Storefront-Access-Token'],'public-test-token');return {ok:true,json:async()=>({data:{nodes:catalogEntries().map(([k,v])=>({id:variants[k],availableForSale:k!=='tomato-wink',price:{amount:String(v.cents/100),currencyCode:currency}}))}})}};
- try{const result=await loadPrices(config);assert.equal(result.prices['assembly'],300);assert.equal(result.availability['tomato-wink'],false);currency='EUR';await assert.rejects(loadPrices(config),/currency/)}finally{global.fetch=original}
+ global.fetch=async(url,options)=>{assert.ok(url.includes('/2026-10/graphql.json'));assert.equal(options.headers['X-Shopify-Storefront-Access-Token'],'public-test-token');return {ok:true,json:async()=>({data:{nodes:catalogEntries().map(([k,v])=>({id:variants[k],availableForSale:k!=='tomato-formal',price:{amount:String(v.cents/100),currencyCode:currency}}))}})}};
+ try{const result=await loadPrices(config);assert.equal(result.prices['assembly'],300);assert.equal(result.availability['tomato-formal'],false);currency='EUR';await assert.rejects(loadPrices(config),/currency/)}finally{global.fetch=original}
 });
 test('partial carts, Shopify warnings, and user errors cannot reach payment',async()=>{
  const original=global.fetch;const bag=[{id:'test',kind:'custom',design:defaultDesign(),quantity:1}];let mode='good';
@@ -20,4 +20,3 @@ test('partial carts, Shopify warnings, and user errors cannot reach payment',asy
  return {ok:true,json:async()=>({data:{cartCreate:payload}})}};
  try{assert.ok((await createCheckout(bag,config)).checkoutUrl);mode='partial';await assert.rejects(createCheckout(bag,config),/components/);mode='warning';await assert.rejects(createCheckout(bag,config),/Availability/);mode='error';await assert.rejects(createCheckout(bag,config),/Unavailable product/)}finally{global.fetch=original}
 });
-

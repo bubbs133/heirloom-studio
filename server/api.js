@@ -1,5 +1,5 @@
 // Checkout API. The browser sends DESIGNS, never prices or order lines; every price, quantity and
-// mandatory line (assembly, strands) is derived here from the same rules the storefront uses (dist/js/core.js).
+// required and extra component lines are derived here from the same rules the storefront uses (dist/js/core.js).
 // Pure of Cloudflare specifics: pass in an `admin` client and plain config so it can be tested with mocks.
 import {
   sanitizeCart,

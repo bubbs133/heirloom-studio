@@ -7,11 +7,11 @@
     <title>Heirloom Studio — Tiny charms, big personality.</title>
     <meta
       name="description"
-      content="A little tomato, a lot of personality. Explore handmade-inspired tomato charms or build your own with colorful beads and your favorite clasp."
+      content="A little tomato, a lot of personality. Explore handmade tomato charms or build your own with colorful beads and your favorite clasp."
     />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./fonts.css" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20261031-3" />
     <script type="module" src="./js/app.js"></script>
   </head>
   <body>
@@ -27,7 +27,7 @@
     <header class="site-header">
       <a
         class="wordmark"
-        href="#"
+        href="index.html"
         aria-label="Heirloom Studio home"
         data-brand-home
         ><span class="logo-tomato" aria-hidden="true"
@@ -40,7 +40,7 @@
       >
       <nav aria-label="Main navigation">
         <a href="index.html">Shop the patch</a
-        ><a href="#studio">Build your own</a
+        ><a href="#studio">Harvest your own</a
         ><a href="index.html#artist">Our little story</a>
       </nav>
       <button
@@ -75,17 +75,17 @@
             THE STUDIO
           </p>
           <h2 id="studio-heading">
-            A little bit of this, a little of <span class="borel">you.</span>
+            A little bit of this, a little bit of <span class="borel">you.</span>
           </h2>
           <p>
-            Pick your clasp, meet your tomato, and dress it up with beads.<br />
-            We’ll show you as you go.
+            Choose where your little tomato is going, then pick its clasp,
+            personality, and beads.
           </p>
         </div>
         <div class="builder">
           <div class="preview-window">
             <div class="window-label">
-              <span><i class="live-dot"></i> YOUR LITTLE CREATION</span>
+              <span><i class="live-dot"></i> YOUR SILLY, LITTLE CREATION</span>
             </div>
             <div class="preview-tools" role="group" aria-label="Design tools">
               <button
@@ -139,11 +139,13 @@
           <div class="controls-window">
             <div class="step-tabs" role="group" aria-label="Builder steps">
               <button data-step="0" aria-pressed="true">
-                <span>01</span> Clasp</button
-              >              <button data-step="1" aria-pressed="false">
-                <span>02</span> Tomato</button
+                <span>01</span> Charm</button
+              ><button data-step="1" aria-pressed="false">
+                <span>02</span> Clasp</button
               ><button data-step="2" aria-pressed="false">
-                <span>03</span> Beads
+                <span>03</span> Tomato</button
+              ><button data-step="3" aria-pressed="false">
+                <span>04</span> Beads
               </button>
             </div>
             <div id="step-content" class="step-content"></div>
@@ -213,6 +215,47 @@
       >
       <a href="index.html">Back to the shop</a>
     </footer>
+    <dialog
+      id="photo-gallery"
+      class="photo-gallery"
+      aria-labelledby="photo-gallery-title"
+    >
+      <div class="photo-gallery-top">
+        <div>
+          <h2 id="photo-gallery-title"></h2>
+          <p id="photo-gallery-count" aria-live="polite"></p>
+        </div>
+        <button
+          class="icon-button"
+          id="photo-gallery-close"
+          aria-label="Close photo viewer"
+        >
+          ×
+        </button>
+      </div>
+      <div class="photo-gallery-view">
+        <button
+          class="gallery-arrow"
+          id="photo-gallery-previous"
+          aria-label="Previous photo"
+          hidden
+        >
+          ←
+        </button>
+        <div class="photo-gallery-image">
+          <img id="photo-gallery-photo" alt="" hidden />
+          <div id="photo-gallery-art" hidden></div>
+        </div>
+        <button
+          class="gallery-arrow"
+          id="photo-gallery-next"
+          aria-label="Next photo"
+          hidden
+        >
+          →
+        </button>
+      </div>
+    </dialog>
     <dialog id="bag" aria-labelledby="bag-title">
       <div class="bag-top">
         <h2 id="bag-title">Your little <span class="borel">bag.</span></h2>

@@ -57,14 +57,14 @@ test('a valid bag becomes a draft order priced from catalog variants, with the m
  assert.match(body.checkoutUrl,/^https:\/\//);
  const input=drafts(admin)[0].vars.input;
  const keys=input.lineItems.map(l=>keyOf[l.variantId]);
- assert.ok(keys.includes('assembly')&&keys.includes('strand'),'assembly and strand lines are server-added');
+ assert.ok(keys.includes('assembly')&&!keys.includes('strand'),'included strands are not separately charged');
  assert.equal(input.lineItems.find(l=>keyOf[l.variantId]==='assembly').quantity,2);
  assert.ok(input.lineItems.every(l=>l.customAttributes.some(a=>a.key==='Design code'&&a.value.startsWith('v2.'))));
  assert.ok(input.lineItems.every(l=>l.customAttributes.some(a=>a.key==='Design'&&a.value.startsWith('Serious tomato (Regular)'))));
  assert.deepEqual(input.tags,['lt-web']);
  const text=JSON.stringify(input);
  for(const forbidden of ['priceOverride','appliedDiscount','originalUnitPrice','price"'])assert.ok(!text.includes(forbidden),forbidden);
- const expected=2*21*100+2*22*100;
+ const expected=2*1599+2*2200;
  assert.equal(body.cost.subtotalAmount.amount,(expected/100).toFixed(2));
  assert.equal(body.cost.subtotalAmount.currencyCode,'USD');
 });
@@ -76,7 +76,7 @@ test('anything a tampering browser adds (prices, lines, totals) is ignored; only
  assert.equal(res.status,200);
  const input=drafts(admin)[0].vars.input;
  assert.equal(input.lineItems.find(l=>keyOf[l.variantId]==='assembly').quantity,1);
- assert.equal((await res.json()).cost.subtotalAmount.amount,'21.00');
+ assert.equal((await res.json()).cost.subtotalAmount.amount,'15.99');
 });
 
 test('invalid or oversized bags are rejected before any draft order exists',async()=>{
@@ -125,15 +125,16 @@ test('oversized bodies are refused, including ones that hide their size',async()
 });
 
 test('sold-out or short-stock components block checkout without creating a draft',async()=>{
+ const extraBeadDesign=defaultDesign();
+ extraBeadDesign.strands[0].push(bead('pink'));
  let {api,admin}=setup({available:id=>id!==variants['bead-pink-round']});
- let res=await api.handle(post({bag:[custom()]}));
+ let res=await api.handle(post({bag:[custom({design:extraBeadDesign})]}));
  assert.equal(res.status,409);assert.deepEqual((await res.json()).unavailable,['bead-pink-round']);
  assert.equal(drafts(admin).length,0);
- // default design uses 2 pink round beads per charm; 3 charms need 6 but only 5 are in stock
- ({api,admin}=setup({qty:id=>id===variants['bead-pink-round']?5:null}));
- res=await api.handle(post({bag:[custom({quantity:3})]}));
+ ({api,admin}=setup({qty:id=>id===variants['bead-pink-round']?2:null}));
+ res=await api.handle(post({bag:[custom({quantity:3,design:extraBeadDesign})]}));
  assert.equal(res.status,409);assert.equal(drafts(admin).length,0);
- res=await api.handle(post({bag:[custom({quantity:2})]},{ip:'2.2.2.2'}));
+ res=await api.handle(post({bag:[custom({quantity:2,design:extraBeadDesign})]},{ip:'2.2.2.2'}));
  assert.equal(res.status,200);
 });
 
@@ -316,7 +317,7 @@ test('audit flags missing, extra, mis-quantified and orphaned lines',()=>{
  assert.ok(codes({...base,lines:extra}).includes('unexpected-component'));
  const orphan=[...base.lines,{variantId:variants['bead-pink-round'],quantity:1,attributes:{}}];
  assert.ok(codes({...base,lines:orphan}).includes('untracked-line'));
- const cheaper=toAudit([custom()],l=>({...l,attributes:{...l.attributes,'Design code':encodeDesign({...defaultDesign(),tomato:'love'})}}));
+ const cheaper=toAudit([custom()],l=>({...l,attributes:{...l.attributes,'Design code':encodeDesign({...defaultDesign(),tomato:'formal'})}}));
  assert.ok(codes(cheaper).includes('component-mismatch'),'design code that disagrees with the lines is caught');
  const split=toAudit([custom()],(l)=>l);split.lines[0].attributes['Design code']='v1.sunny.ring.pink-round+pink-round+pink-round';
  assert.deepEqual(codes(split),['inconsistent']);

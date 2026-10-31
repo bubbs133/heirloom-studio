@@ -35,14 +35,14 @@ The current implementation maps **43 catalog keys**:
 | `assembly` | Custom assembly labor, one per finished custom charm | $3.00 |
 | `strand` | Stringing labor/materials, one per strand | $1.50 |
 | `tomato-size-regular`, `tomato-size-small`, `tomato-size-mini` | Tomato base price by size | $5.50–$7.50 (placeholders) |
-| `tomato-serious`, `tomato-grumpy`, `tomato-formal`, `tomato-bday`, `tomato-love`, `tomato-wink` | Personality surcharge; Serious is included at $0.00 | $0.00–$1.00 (placeholders) |
+| `tomato-serious`, `tomato-grumpy`, `tomato-formal`, `tomato-bday` | Personality surcharge; Serious and Grumpy are $0.00 | $0.00–$1.00 (placeholders) |
 | `clasp-ring`, `clasp-lobster`, `clasp-phone`, `clasp-dust-usbc`, `clasp-dust-lightning` | Hardware, one per custom charm | $2.00–$3.00 |
-| `bead-{color}-{type}` | Color-specific bead component, one per selected bead | $0.75–$1.25 |
+| `bead-{color}-{type}` | Color- and shape-specific bead component, one per selected bead | $0.75–$1.50 |
 | `product-garden-party`, `product-sweet-thing`, `product-cherry-on-top` | Complete ready-made item, one SKU per design | $22.00–$26.00 |
 
 Colors: `poppy`, `pink`, `cream`, `green`, `blue`, `lavender`.
 
-Types: `round`, `pearl`, `flower`, `star`. All 24 combinations are separate catalog keys. Use product variants for these options. Extract real ProductVariant GIDs through Shopify's supported admin/API workflow; do not substitute product GIDs or handles.
+Types: `round`, `star`, `flower`, `heart`, `bow`, `butterfly`, `misc`. All 42 color-and-shape combinations are separate catalog keys. Use product variants for these options. Extract real ProductVariant GIDs through Shopify's supported admin/API workflow; do not substitute product GIDs or handles.
 
 Set assembly and strand-labor variants as non-shipping service entries as appropriate for the actual store. Track stock on tomatoes, beads, and clasps as appropriate; configure physical weights and shipping on actual physical items so the resulting component cart has correct delivery calculations. Do not track finite inventory on a labor-only service unless the artist wants a capacity limit.
 

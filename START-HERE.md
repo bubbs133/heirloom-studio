@@ -4,7 +4,7 @@ This is the full source for your charm shop website and its charm builder. **Hei
 
 ## What you have
 
-- **A website** with a charm builder: pick a clasp first, then a tomato personality. Dust plugs automatically pair with a Small tomato; phone loops, key rings and lobster clasps pair with Regular. String 1 to 3 strands, with up to 3 beads per strand for dust plugs and 5 for other clasps. It shows the price as you build, has undo/redo, a "Surprise me" button, share links, and a shopping bag.
+- **A website** with a four-step charm builder: choose a keychain or phone charm, then pick the attachment, tomato personality, and beads. Keychains start at $15.99 with a Regular tomato; phone charms start at $8.49 with a Small tomato. Both include one strand of three beads and a little star bead on the side; extra strands and beads cost extra. String up to 3 strands, with up to 3 beads per phone-charm strand and 5 per keychain strand. It shows the price as you build, has undo/redo, a "Surprise me" button, share links, and a shopping bag.
 - **A predesigned ideas page** at `dist/ideas.html`. The home page shows three featured ideas; the dedicated page automatically shows every product in `dist/js/catalog.js`, so add future ideas there and they will appear in the full collection.
 - **A checkout helper** (the `server/` folder). It is a small program that decides the real price and creates the Shopify checkout, so nobody can change a price from their browser.
 - Automated tests check the builder, the prices and the checkout helper.

@@ -16,7 +16,7 @@ browser (static site)  ──POST /checkout {bag}──▶  Worker  ──Admin 
 | Route | Purpose |
 | --- | --- |
 | `GET /prices` | Catalog prices (integer cents), availability and currency, read from Shopify and cached for 60 s. Variant IDs are never sent to the browser. |
-| `POST /checkout` | Body `{bag, turnstileToken?}`. Validates every design with the same rules as the site, adds the mandatory assembly and strand lines itself, checks availability and stock, creates a draft order, then re-checks what Shopify built. |
+| `POST /checkout` | Body `{bag, turnstileToken?}`. Validates every design with the same rules as the site, adds the assembly and billable strand/bead lines itself (one strand of three beads is included for every clasp; extra strands and beads are billed), checks availability and stock, creates a draft order, then re-checks what Shopify built. |
 | `POST /webhooks/orders-create` | Optional audit. After an order is placed, compares its lines with the design recorded on them and tags the order `needs-review` if they disagree. Only active when `ORDER_WEBHOOKS=on`; the request must carry a valid Shopify HMAC (bodies up to 2 MB, because a 20-design order is larger than a checkout request). |
 | `GET /health` | `{ok:true}`. |
 | daily cron | Deletes this API's own abandoned draft orders (tag `lt-web`, still open, never completed, older than `DRAFT_MAX_AGE_HOURS`), at most 40 per run so it stays inside the Workers free plan's 50 outgoing requests; the next run continues. |
